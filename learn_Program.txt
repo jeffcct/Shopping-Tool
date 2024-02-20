@@ -1,0 +1,68 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
+using System.Globalization;
+using CsvHelper;
+using HtmlAgilityPack;
+
+namespace MyProgram {
+    class Program {
+
+        static void Main(string[] args) {
+            String url = "http://books.toscrape.com/catalogue/category/books/mystery_3/index.html";
+            List<String> links = GetBookLinks(url);
+            List<Book> books = GetBookInformation(links);
+            Console.WriteLine("There were {0} books", links.Count);
+            exportToCSV(books);
+
+        }
+
+        static HtmlDocument GetDocument(string url) {
+            HtmlWeb web = new HtmlWeb();
+            HtmlDocument doc = web.Load(url);
+            return doc;
+        }
+
+        static List<String> GetBookLinks(string url) {
+            var bookLinks = new List<String>();
+            HtmlDocument doc = GetDocument(url);
+            HtmlNodeCollection linkNodes = doc.DocumentNode.SelectNodes("//h3/a");
+            Uri baseUri = new Uri(url);
+            foreach (var link in linkNodes) {
+                string href = link.Attributes["href"].Value;
+                Uri uri = new Uri(baseUri, href);
+                bookLinks.Add(uri.AbsoluteUri);
+            }
+            return bookLinks;
+        }
+
+        static List<Book> GetBookInformation(List<string> urls) {
+            var books = new List<Book>();
+            foreach (String url in urls) {
+                Book book = new Book();
+                HtmlDocument doc = GetDocument(url);
+                String title_query = "//div[contains(@class,\"product_main\")]/h1";
+                String price_query = "//div[contains(@class,\"product_main\")]/p[@class=\"price_color\"]";
+                book.Title = doc.DocumentNode.SelectSingleNode(title_query).InnerText;
+                book.Price = doc.DocumentNode.SelectSingleNode(price_query).InnerText;
+                books.Add(book);
+            }
+            return books;
+        }
+
+        static void exportToCSV(List<Book> books) {
+            using (var writer = new StreamWriter("./books.csv"))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(books);
+            }
+        }
+    }
+
+
+    public class Book {
+        public string Title { get; set; }
+        public string Price { get; set; }
+    }
+}
+
+
