@@ -47,9 +47,9 @@
               "target": "Package",
               "version": "[31.0.0, )"
             },
-            "HtmlAgilityPack": {
+            "Selenium.WebDriver": {
               "target": "Package",
-              "version": "[1.11.59, )"
+              "version": "[4.18.1, )"
             }
           },
           "imports": [

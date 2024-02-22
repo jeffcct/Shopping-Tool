@@ -4,7 +4,6 @@
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/Shopping-Tool.dll
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/Shopping-Tool.pdb
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/CsvHelper.dll
-/media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/HtmlAgilityPack.dll
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/System.Linq.Async.dll
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/obj/Debug/net8.0/Shopping-Tool.csproj.AssemblyReference.cache
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/obj/Debug/net8.0/Shopping-Tool.GeneratedMSBuildEditorConfig.editorconfig
@@ -18,3 +17,8 @@
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/obj/Debug/net8.0/Shopping-Tool.pdb
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/obj/Debug/net8.0/Shopping-Tool.genruntimeconfig.cache
 /media/jffrysith/TRANSCEND/code/Shopping-Tool/obj/Debug/net8.0/ref/Shopping-Tool.dll
+/media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/selenium-manager/linux/selenium-manager
+/media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/selenium-manager/macos/selenium-manager
+/media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/selenium-manager/windows/selenium-manager.exe
+/media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/Newtonsoft.Json.dll
+/media/jffrysith/TRANSCEND/code/Shopping-Tool/bin/Debug/net8.0/WebDriver.dll
