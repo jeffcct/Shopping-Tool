@@ -8,17 +8,22 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
 using System.Security.AccessControl;
+using System.Globalization;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 
 
 class Item {
     public String Name {get; set;}
     public String Price {get; set;}
     public String Link {get; set;}
+    public String Shop {get; set;}
 }
 
 interface Scraper {
     int getNumberPages(ChromeDriver driver, String url);
     void getItems(ChromeDriver driver, List<Item> returnedLinks);
+    void Export(List<Item> items);
 }
 
 
@@ -53,7 +58,7 @@ class General {
         foreach (Item item in returnedItems) {
             Console.WriteLine("{0}, {1}", item.Name, item.Price);
         }
-        Console.WriteLine("{0}", returnedItems.Count);
+        scraper.Export(returnedItems);
         
 
 
@@ -92,8 +97,20 @@ class CountdownScraper : Scraper {
             item.Link = link.GetAttribute("href");
             var price = divElement.Text.Split("\n");
             item.Price = price[1] + "." + price[2];
+            item.Shop = "Countdown";
             returnedItems.Add(item);
 
         }
+    }
+
+    public void Export(List<Item> items) {
+        String filePath = "items.csv";
+        using (StreamWriter writer = new StreamWriter(filePath))
+        using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+        {
+            csv.WriteRecords(items);
+        }
+
+        Console.WriteLine("Data exported to {filePath}");
     }
 }
