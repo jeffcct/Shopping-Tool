@@ -11,17 +11,21 @@ using System.Security.AccessControl;
 using System.Globalization;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using OpenQA.Selenium.DevTools.V120.Network;
+using System.ComponentModel;
 
 
 class Item {
     public String Name {get; set;}
     public String Price {get; set;}
-    public String Link {get; set;}
+    public String Category {get; set;}
     public String Shop {get; set;}
+    public String Link {get; set;}
+
 }
 
 interface Scraper {
-    int getNumberPages(ChromeDriver driver, String url);
+    int getNumberPages(ChromeDriver driver);
     void getItems(ChromeDriver driver, List<Item> returnedLinks);
     void Export(List<Item> items);
 }
@@ -46,58 +50,73 @@ class General {
         var driver = new ChromeDriver(chromeOptions);
          driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
-        int num_pages = scraper.getNumberPages(driver, "https://www.countdown.co.nz/shop/browse/frozen?page=1&size=120&inStockProductsOnly=false");
-        Console.WriteLine("{0}", num_pages);
+        scraper.openurl(driver, "https://www.countdown.co.nz/");
+        List<String> categories = scraper.getCategories(driver);
+        scraper.openurl(driver, "https://www.countdown.co.nz/shop/browse/frozen?page={0}&size=&inStockProductsOnly=false");
         List<Item> returnedItems = new List<Item>();
-        for (int i = 1; i <= 2; i++) { //System.Math.Ceiling(num_pages / 120.0)
-            String link = String.Format("https://www.countdown.co.nz/shop/browse/frozen?page={0}&size=120&inStockProductsOnly=false", i);
-            scraper.openurl(driver, link);
-            scraper.getItems(driver, returnedItems);
+
+        foreach (String category in categories) {
+            String url = String.Format(category, 1);
+            scraper.openurl(driver, url);
+            int numItems = scraper.getNumberPages(driver);
+
+            for (int i = 1; i <= Math.Min(2, Math.Ceiling(numItems / 120.0)); i++) {
+                url = String.Format(category, i);
+                scraper.openurl(driver, url);
+                scraper.getItems(driver, returnedItems);
+            }
         }
 
-        foreach (Item item in returnedItems) {
-            Console.WriteLine("{0}, {1}", item.Name, item.Price);
-        }
         scraper.Export(returnedItems);
         
-
 
         driver.Quit();
     }
 }
 class CountdownScraper : Scraper {
 
+    public List<String> getCategories(ChromeDriver driver) {
+        List<String> returnCategories = new List<String>();
+        var categories = driver.FindElements(By.CssSelector("a.link.ng-star-inserted"));
+        foreach (var category in categories) {
+            String output = category.GetAttribute("href") + "?page={0}&size=120&inStockProductsOnly=false";
+            returnCategories.Add(output);
+            Console.WriteLine(output);
+        }
 
-    public int getNumberPages(ChromeDriver driver, String url) {
-        driver.Navigate().GoToUrl(url);
+        return returnCategories;
+    }
 
-        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(100));
-        wait.Until(c => c.FindElement(By.CssSelector("span.totalItemsCount")));
+    public int getNumberPages(ChromeDriver driver) {
         String NumberPages = driver.FindElement(By.CssSelector("span.totalItemsCount")).Text.Split(" ")[0];
         return Int32.Parse(NumberPages);
     }
 
     public void openurl(ChromeDriver driver, String url) {
         driver.Navigate().GoToUrl(url); 
-        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-
-        wait.Until(c => c.FindElement(By.CssSelector("span.totalItemsCount"))); //waits untill the whole page loads.
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
     }
 
     public void getItems(ChromeDriver driver, List<Item> returnedItems) {
 
+        String category = driver.FindElement(By.CssSelector("div.headingContainer")).FindElement(By.CssSelector("h1")).Text;
         var links = driver.FindElements(By.CssSelector("a.product-entry"));
 
         foreach (var link in links) {
             Item item = new Item();
+            item.Category = category;
+            item.Shop = "Countdown";
+            
+
             IWebElement divElement = link.FindElement(By.CssSelector("h3"));
             item.Name = divElement.Text;
 
             divElement = link.FindElement(By.CssSelector("div.product-meta")).FindElement(By.CssSelector("product-price")).FindElement(By.CssSelector("h3"));
             item.Link = link.GetAttribute("href");
-            var price = divElement.Text.Split("\n");
-            item.Price = price[1] + "." + price[2];
-            item.Shop = "Countdown";
+
+            var price = divElement.Text.Replace("\n", " ");
+            item.Price = price;
+            
             returnedItems.Add(item);
 
         }
@@ -111,6 +130,6 @@ class CountdownScraper : Scraper {
             csv.WriteRecords(items);
         }
 
-        Console.WriteLine("Data exported to {filePath}");
+        Console.WriteLine("Data exported to {0}", filePath);
     }
 }
