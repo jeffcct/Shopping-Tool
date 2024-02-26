@@ -22,13 +22,17 @@ class Item {
     public String Category {get; set;}
     public String Shop {get; set;}
     public String Link {get; set;}
+    public String Image {get; set;}
 
 }
 
 interface Scraper {
     int getNumberPages(ChromeDriver driver);
+    void openurl(ChromeDriver driver, String url);
     void getItems(ChromeDriver driver, List<Item> returnedLinks);
+    void getCategories(ChromeDriver driver);
     void Export(List<Item> items);
+
 }
 
 
@@ -37,15 +41,14 @@ class General {
 
         CountdownScraper scraper = new CountdownScraper();
 
-        ChromeDriver driver = scraper.constructDriver();
+        ChromeDriver driver = constructDriver();
 
         scraper.openurl(driver, "https://www.countdown.co.nz/");
         List<String> categories = scraper.getCategories(driver);
-        scraper.openurl(driver, "https://www.countdown.co.nz/shop/browse/frozen?page={0}&size=&inStockProductsOnly=false");
         List<Item> returnedItems = new List<Item>();
 
         Parallel.ForEach(categories, category => {
-            using (ChromeDriver driver = scraper.constructDriver()) {
+            using (ChromeDriver driver = constructDriver()) {
                 String url = String.Format(category, 1);
                 scraper.openurl(driver, url);
                 int numItems = scraper.getNumberPages(driver);
@@ -58,15 +61,13 @@ class General {
             
         });
 
-        scraper.Export(returnedItems);
+        Export(returnedItems);
         
 
         driver.Quit();
     }
-}
-class CountdownScraper : Scraper {
 
-    public ChromeDriver constructDriver() {
+    static ChromeDriver constructDriver() {
         ChromeOptions chromeOptions = new ChromeOptions();
         //chromeOptions.AddArguments("--headless=new");
         chromeOptions.AddArgument("--disable-gpu");
@@ -83,6 +84,18 @@ class CountdownScraper : Scraper {
         return driver;
     }
 
+    static void Export(List<Item> items) {
+        String filePath = "../data/items.csv";
+        using (StreamWriter writer = new StreamWriter(filePath))
+        using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+        {
+            csv.WriteRecords(items);
+        }
+
+        Console.WriteLine("Data exported to {0}", filePath);
+    }
+}
+class CountdownScraper : Scraper {
     public List<String> getCategories(ChromeDriver driver) {
         List<String> returnCategories = new List<String>();
         var categories = driver.FindElements(By.CssSelector("a.link.ng-star-inserted"));
@@ -112,32 +125,23 @@ class CountdownScraper : Scraper {
 
         foreach (var link in links) {
             Item item = new Item();
-            item.Category = category;
             item.Shop = "Countdown";
+            item.Category = category;
+            
             
 
-            IWebElement divElement = link.FindElement(By.CssSelector("h3"));
-            item.Name = divElement.Text;
+            item.Name = link.FindElement(By.CssSelector("h3")).Text;
 
-            divElement = link.FindElement(By.CssSelector("div.product-meta")).FindElement(By.CssSelector("product-price")).FindElement(By.CssSelector("h3"));
+            var divElement = link.FindElement(By.CssSelector("div.product-meta")).FindElement(By.CssSelector("product-price")).FindElement(By.CssSelector("h3"));
             item.Link = link.GetAttribute("href");
 
-            var price = divElement.Text.Replace("\n", " ");
-            item.Price = price;
-            
+            item.Price = divElement.Text.Replace("\n", " ");
+
+            String image = link.FindElement(By.CssSelector("img")).GetAttribute("src");
+            item.Image = image;   
+
             returnedItems.Add(item);
 
         }
-    }
-
-    public void Export(List<Item> items) {
-        String filePath = "../data/items3.csv";
-        using (StreamWriter writer = new StreamWriter(filePath))
-        using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-        {
-            csv.WriteRecords(items);
-        }
-
-        Console.WriteLine("Data exported to {0}", filePath);
     }
 }
