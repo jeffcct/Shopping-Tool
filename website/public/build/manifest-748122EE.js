@@ -1,0 +1,1 @@
+window.__remixManifest={"entry":{"module":"/build/entry.client-6EDYC6XF.js","imports":["/build/_shared/chunk-E6PHJUDC.js"]},"routes":{"root":{"id":"root","path":"","module":"/build/root-LASL7CTU.js","hasAction":false,"hasLoader":false,"hasClientAction":false,"hasClientLoader":false,"hasErrorBoundary":false}},"version":"748122ee","url":"/build/manifest-748122EE.js"};

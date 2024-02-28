@@ -30,8 +30,7 @@ interface Scraper {
     int getNumberPages(ChromeDriver driver);
     void openurl(ChromeDriver driver, String url);
     void getItems(ChromeDriver driver, List<Item> returnedLinks);
-    void getCategories(ChromeDriver driver);
-    void Export(List<Item> items);
+    List<string> getCategories(ChromeDriver driver);
 
 }
 

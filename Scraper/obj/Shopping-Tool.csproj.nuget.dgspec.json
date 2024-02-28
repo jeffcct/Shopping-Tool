@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/media/jffrysith/TRANSCEND/code/Shopping-Tool/Scraper/Shopping-Tool.csproj": {}
+    "/home/jffrysith/Documents/Shopping-Tool/Scraper/Shopping-Tool.csproj": {}
   },
   "projects": {
-    "/media/jffrysith/TRANSCEND/code/Shopping-Tool/Scraper/Shopping-Tool.csproj": {
+    "/home/jffrysith/Documents/Shopping-Tool/Scraper/Shopping-Tool.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/media/jffrysith/TRANSCEND/code/Shopping-Tool/Scraper/Shopping-Tool.csproj",
+        "projectUniqueName": "/home/jffrysith/Documents/Shopping-Tool/Scraper/Shopping-Tool.csproj",
         "projectName": "Shopping-Tool",
-        "projectPath": "/media/jffrysith/TRANSCEND/code/Shopping-Tool/Scraper/Shopping-Tool.csproj",
+        "projectPath": "/home/jffrysith/Documents/Shopping-Tool/Scraper/Shopping-Tool.csproj",
         "packagesPath": "/home/jffrysith/.nuget/packages/",
-        "outputPath": "/media/jffrysith/TRANSCEND/code/Shopping-Tool/Scraper/obj/",
+        "outputPath": "/home/jffrysith/Documents/Shopping-Tool/Scraper/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/jffrysith/.nuget/NuGet/NuGet.Config"
